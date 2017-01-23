@@ -1,4 +1,5 @@
 ﻿using Samsung_TV.Commands;
+using Samsung_TV.Responses;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,26 +100,51 @@ namespace Samsung_TV
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public bool SendCommand(ICommand command)
+        public IResponse SendCommand(ICommand command)
         {
-            bool result = false;
+            IResponse result = null;
             try
             {
                 if(Connected)
                 {
                     BinaryWriter writer = new BinaryWriter(client.GetStream());
                     writer.Write(command.ToMessage());
-                    result = true;
+
+                    BinaryReader reader = new BinaryReader(client.GetStream());
+                    List<byte> response = new List<byte>();
+
+                    byte[] buffer = new byte[128];
+                    int bytesRead = 0;
+                    // keep looping while we have read bytes. // TODO: Test this.
+                    while ((bytesRead = reader.Read(buffer, 0, 128)) != 0)
+                    {
+                        // keep track of the bytes. 
+                        response.AddRange(buffer);
+
+                        buffer = new byte[128]; // clear the buffer.
+                    }
+                    
+                    // Decode the response into an object.
+                    ResponseDecoder decoder = new ResponseDecoder();
+                    result = decoder.Decode(response.ToArray());
                 }
             }
             catch (Exception)
             {
                 // TODO: add logging. 
-                result = false;
+                result = null;
             }
             return result;
         }
 
+        public async Task<IResponse> SendCommandAsync(ICommand command)
+        {
+            return await Task.Run<IResponse>( () => 
+                {
+                    return SendCommand(command);
+                }
+            );
+        }
         
 
         /*

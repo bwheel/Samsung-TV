@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static Samsung_TV.CommandTypes;
+using static Samsung_TV.CommandType;
 
 namespace Samsung_TV
 {
@@ -33,10 +33,10 @@ namespace Samsung_TV
             return message.ToArray();
         }
 
-        public static char[] GetKeyCodeMessage(KeyCode code)
+        public static char[] GetKeyCodeMessage(CommandType.CommandTypes code)
         {
             List<char> message = new List<char>();
-            string command = CommandTypes.CommandLookUp[code];
+            string command = CommandType.CommandLookUp[code];
 
             message.Add(NULL_CHAR);
             message.Add(Convert.ToChar(APP_STRING.Length));

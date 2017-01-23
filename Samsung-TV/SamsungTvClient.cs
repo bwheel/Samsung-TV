@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,14 +12,47 @@ namespace Samsung_TV
     {
         public SamsungTvConnection Connection { get; private set; }
 
+        public SamsungTvClient(IPAddress tvAddress)
+        {
+            Connection = new SamsungTvConnection(tvAddress);
+        }
+
         public bool Authenticate()
         {
-            throw new NotImplementedException();
+            bool result = false;
+            try
+            {
+                if(ConnectIfNotConnected())
+                {
+                    ICommand authCommand = new AuthenticateCommand("myName", "myAppName");
+                    Connection.SendCommand(authCommand);
+                    result = true;
+                }
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
         }
         
-        public Task<bool> AuthenticateAsync()
+        public async Task<bool> AuthenticateAsync()
         {
-            throw new NotImplementedException();
+            bool result = false;
+            try
+            {
+                if (ConnectIfNotConnected())
+                {
+                    ICommand authCommand = new AuthenticateCommand("myName", "myAppName");
+                    await Connection.SendCommandAsync(authCommand);
+                    result = true;
+                }
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
         }
 
         public bool SendCommand(ICommand command)
@@ -29,6 +63,20 @@ namespace Samsung_TV
         public Task<bool> SendCommandAsync(ICommand command)
         {
             throw new NotImplementedException();
+        }
+
+        private bool ConnectIfNotConnected()
+        {
+            bool result = false;
+            if(!Connection.IsConnected())
+            {
+                result = Connection.Connect();
+            }
+            else
+            {
+                result = Connection.IsConnected();
+            }
+            return result;
         }
     }
 }

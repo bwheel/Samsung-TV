@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Samsung_TV
+namespace Samsung_TV.Responses
 {
-    public enum AuthenticationState
+    public class AuthenticatedResponse : IResponse
     {
-        AUTHENTICATED,
-        DENIED,
-        TIMEOUT
     }
 }

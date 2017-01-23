@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,6 +44,32 @@ namespace Samsung_TV
 
             byte[] textAsBytes = Convert.FromBase64String(encodedText);
             return encoding.GetString(textAsBytes);
+        }
+
+        public static byte[] ToBytes(this string text)
+        {
+            return Encoding.ASCII.GetBytes(text);
+        }
+
+        public static bool MatchesArray(this char[] source, char[] contrast)
+        {
+            bool result = false;
+
+            if(source.Length == contrast.Length)
+            {
+                bool match = true;
+                for(int i = 0; i < source.Length; i++)
+                {
+                    if(!source[i].Equals(contrast[i]))
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                result = match;
+            }
+
+            return result;
         }
 
     }
